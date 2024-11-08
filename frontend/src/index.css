@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+#root{
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+html{
+    scrollbar-width: none;
+    padding: 0 !important;
+    
+}
+.services div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    cursor: pointer;
+}
+.services div p{
+    opacity: 0.7;
+}
+.services div p:hover{
+    opacity: 1;
+}
+
+.outerSider{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+.innerSider{
+    width: 80vw;
+    height: 100vh;
+    position: absolute;
+    background-color: #fff;
+    z-index: 1;
+}
+.sidebar-list a{
+    text-decoration: none;
+    color: #000;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+.sidebar-list a li{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    opacity: 0.7;
+}
+#sidebar-icon{
+    font-size: 2rem;
+    margin-right: 5px;
+}
+.showImageItems{
+    margin: auto;
+    width: 70%;
+    min-height: 5rem;
+    overflow-x: scroll; 
+    scrollbar-width: none; 
+}
+.showImageItems::-webkit-scrollbar{
+    display: none;
+}
+.showImageItems img{
+    filter: grayscale(0.5);
+}
+.showImageItems img:hover{
+    filter: grayscale(0);
+}
