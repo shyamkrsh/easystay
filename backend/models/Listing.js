@@ -11,8 +11,8 @@ const listingSchema = new Schema({
         type: String,
     },
     location: {
-        latitude: Number,
-        longitude: Number,
+        type: String,
+        required: true,
     },
     availability: {
         type: String,

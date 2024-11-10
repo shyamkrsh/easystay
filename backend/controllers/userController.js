@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { sendMail } = require("../middleware/sendMail");
 
+
+
 module.exports.signup = async (req, res) => {
     try {
         let { profileImage, name, email, mobNumber, password } = req.body;
@@ -25,7 +27,7 @@ module.exports.signup = async (req, res) => {
 
         const salt = bcrypt.genSaltSync(10);
         const hashPassword = bcrypt.hashSync(password, salt);
-        let newUser = new User({ profileImage: null, name: name, email: email, mobNumber: mobNumber, password: hashPassword });
+        let newUser = new User({ profileImage: req.file.path, name: name, email: email, mobNumber: mobNumber, password: hashPassword });
         await newUser.save().then((res) => {
             req.user = newUser;
             sendMail(newUser.email, newUser.name, "Welcome to EasyStay !");

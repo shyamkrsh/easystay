@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
 const port = 8080;
@@ -8,13 +9,17 @@ const data = require("./data.json");
 const Listing = require("./models/Listing");
 const contactRouter = require("./routes/contactRouter");
 
+// const MONGO_URL= process.env.MONGO_URL;
+
 main().then((res) => {
     console.log(`Connected to DB`);
 }).catch((err) => {
     console.log(err);
 })
 async function main() {
-    await mongoose.connect("mongodb://localhost:27017/easystay");
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 3000,
+    });
 }
 
 app.use(cors());

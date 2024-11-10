@@ -56,7 +56,10 @@ function ShowListingPage() {
     <>
       <ShowListingNav />
       <div className='mt-20 '>
-        <Images img1={listingData ? listingData.images[0].url : ""} img2={listingData ? listingData.images[1].url : ""} />
+        <Images 
+        img1={listingData ? listingData.images[0].url : ""} img2={listingData ? listingData.images[1].url : ""}
+        img3={listingData ? listingData.images[2].url : ""} img4={listingData ? listingData.images[3].url : ""}
+        />
       </div>
 
       <div className={owner?._id == user?._id ? "flex items-center justify-center gap-10 md:gap-32 md:mt-5 p-3 mt-3" : "hidden"}>

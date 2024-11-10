@@ -22,9 +22,7 @@ function Listings() {
         setLoader(false);
         setListings(res.data.data);
       }).catch((err) => {
-        toast.error(err.message, {
-          position: 'top-right'
-        })
+        
       })
     }, 1500);
 

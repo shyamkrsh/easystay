@@ -24,9 +24,9 @@ function HomePage() {
 
   return (
     <div className='overflow-hidden'>
-      <div className={loader ? " mx-auto  text-black w-[100%] h-[100vh] items-center justify-center fixed" : "hidden"}>
-        <Loader />
-      </div>
+      {/* <div className={loader ? " mx-auto  text-black w-[100%] h-[100vh] items-center justify-center fixed" : "hidden"}> */}
+        {/* <Loader /> */}
+      {/* </div> */}
 
    
       

@@ -4,7 +4,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-function Images({ img1, img2 }) {
+function Images({ img1, img2, img3, img4 }) {
 
  
 
@@ -27,6 +27,12 @@ function Images({ img1, img2 }) {
                     </div>
                     <div>
                         <img src={img2} style={{ width: "100%" }} className="mt-2 h-[15rem] md:h-[25rem] cursor-zoom-in" />
+                    </div>
+                    <div>
+                        <img src={img3} style={{ width: "100%" }} className="mt-2 h-[15rem] md:h-[25rem] cursor-zoom-in" />
+                    </div>
+                    <div>
+                        <img src={img4} style={{ width: "100%" }} className="mt-2 h-[15rem] md:h-[25rem] cursor-zoom-in" />
                     </div>
                 {/* ))
                 } */}

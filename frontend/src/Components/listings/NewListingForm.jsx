@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -14,11 +14,24 @@ import { toast } from 'react-hot-toast';
 function NewListingForm() {
 
   const user = useSelector((state) => state.user.user);
+  const [image1, setImage1] = useState();
+  const [image2, setImage2] = useState();
+  const [image3, setImage3] = useState();
+  const [image4, setImage4] = useState();
 
   const navigate = useNavigate();
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const onSubmit = (data) => {
-    axios.post("/api/listings/new", data, {
+    const formData = new FormData();
+    const images = [image1, image2, image3, image4];
+    images.forEach((image) => {
+      formData.append('images', image);
+    });
+    
+    Object.keys(data).forEach((key) => {
+      formData.append(key, data[key]);
+    });
+    axios.post("/api/listings/new", formData, {
       withCredentials: true,
     }).then((res) => {
       toast.success("New Place added", {
@@ -38,10 +51,11 @@ function NewListingForm() {
     <>
       <div className='bg-blue-600 text-white flex flex-start gap-5 w-[100%] px-5 py-5 fixed top-0 z-10'>
         <Link to="/"><IoArrowBack className='text-2xl font-extrabold' /></Link>
-        <h2 className='text-xl font-semibold'>Online your rooms</h2>
+        <h2 className='text-xl font-semibold'>Online your services</h2>
       </div>
 
-      <div className='w-[100%] mt-12 md:mt-8 p-10 md:w-[40%]  absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]'>
+      <div className='w-[100%] mt-12 md:mt-28 p-10 md:w-[40%]  absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]'>
+        <h1 className='text-2xl font-semibold text-center mt-16'>Online Form</h1>
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
 
           {/* image input completed */}
@@ -111,18 +125,18 @@ function NewListingForm() {
               <input
                 type="file"
                 id='image1'
-                name='image1'
+                name='images[image1]'
                 className='w-[150px] md:w-[200px]'
-                {...register("image1")}
+                onChange={(e) => setImage1(e.target.files[0])}
               />
             </div>
             <div className=''>
               <input
                 type="file"
                 id='image2'
-                name='image2'
+                name='images[image2]'
                 className='w-[150px] md:w-[200px]'
-                {...register("image2")}
+                onChange={(e) => setImage2(e.target.files[0])}
               />
             </div>
           </div>
@@ -131,18 +145,18 @@ function NewListingForm() {
               <input
                 type="file"
                 id='image3'
-                name='image3'
+                name='images[image3]'
                 className='w-[150px] md:w-[200px]'
-                {...register("image3")}
+                onChange={(e) => setImage3(e.target.files[0])}
               />
             </div>
             <div className=''>
               <input
                 type="file"
                 id='image4'
-                name='image4'
+                name='images[image4]'
                 className='w-[150px] md:w-[200px]'
-                {...register("image4")}
+                onChange={(e) => setImage4(e.target.files[0])}
               />
             </div>
           </div>

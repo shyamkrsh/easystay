@@ -32,14 +32,13 @@ module.exports.newListing = async (req, res) => {
             availability: data.availability,
             price: data.price,
             owner: req.userId,
-            profileImage: null,
             payment: data.payment,
             description: data.description,
         })
-        newListing.images.push({ url: "https://i.pinimg.com/736x/fc/03/d8/fc03d8342485241d00de94b16b8b69e7.jpg", filename: 'notavailable' })
-        newListing.images.push({ url: "https://i.pinimg.com/736x/fc/03/d8/fc03d8342485241d00de94b16b8b69e7.jpg", filename: 'notavailable' })
-        newListing.images.push({ url: "https://i.pinimg.com/736x/fc/03/d8/fc03d8342485241d00de94b16b8b69e7.jpg", filename: 'notavailable' })
-        newListing.images.push({ url: "https://i.pinimg.com/736x/fc/03/d8/fc03d8342485241d00de94b16b8b69e7.jpg", filename: 'notavailable' })
+        newListing.images.push({ url: req.files[0].path, filename: req.files[0].filename })
+        newListing.images.push({ url: req.files[1].path, filename: req.files[1].filename })
+        newListing.images.push({ url: req.files[2].path, filename: req.files[2].filename })
+        newListing.images.push({ url: req.files[3].path, filename: req.files[3].filename })
 
         let user = await User.findById(req.userId);
         if (!user) {

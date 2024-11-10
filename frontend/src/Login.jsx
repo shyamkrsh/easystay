@@ -30,7 +30,7 @@ function Login() {
                 fetchUserDetails();
                 navigate("/")
             } else {
-                toast.error(err.message, {
+                toast.error(res.data.message, {
                     position: 'top-right'
                 })
             }
