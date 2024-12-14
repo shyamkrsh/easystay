@@ -4,7 +4,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-function Card({ image, title, price, description, street_address }) {
+function Card({ image, title, price, duration, description, street_address }) {
     let sliderRef = useRef(null);
 
     const settings = {
@@ -21,15 +21,15 @@ function Card({ image, title, price, description, street_address }) {
 
 
 
-        <div className="card bg-base-100 shadow-xl mx-2 md:mx-2 mb-3 md:mb-5 md:hover:scale-105 transition-all cursor-pointer overflow-hidden z-5">
-            <div className="slider-container">
+        <div className="h-[25rem] rounded-md card mx-2 md:mx-2 mb-3 md:mb-5 md:hover:scale-105 transition-all cursor-pointer overflow-hidden z-5" style={{backgroundColor: "#141d30", boxShadow: '-1px -1px 5px white'}}>
+            <div className="slider-container ">
                 <Slider ref={slider => (sliderRef = slider)} {...settings}>
                     {
-                        (image.length > 0) ? (
-                            image.map((item) => (
+                        (image?.length > 0) ? (
+                            image?.map((item) => (
                                 
-                                    <div key={item._id}>
-                                        <img src={item.url} style={{ width: "100%" }} className=" h-[15rem] " />
+                                    <div key={item?._id}>
+                                        <img src={item?.url} style={{ width: "100%" }} className=" h-[15rem]" />
                                     </div>
                                 
                             ))
@@ -45,11 +45,10 @@ function Card({ image, title, price, description, street_address }) {
                 </Slider>
             </div>
             <div className="card-body">
-                <h3 className="card-title -mt-3">{title}</h3>
-                <p className=''>₹ {price}/-</p>
-                <p className=''>{street_address}</p>
-                <p>{description.slice(0, 50)}...</p>
-
+                <h3 className="card-title -mt-3 text-white text-2xl">{title}</h3>
+                <p className='text-slate-400'>₹ {price}/{duration}</p>
+                <p className='text-slate-300'>{street_address}</p>
+                <p className="text-slate-300 pb-2">{description.slice(0, 50)}...</p>
             </div>
         </div>
     )

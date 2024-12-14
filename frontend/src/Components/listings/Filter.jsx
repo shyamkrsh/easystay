@@ -12,7 +12,7 @@ function Filter() {
 
     return (
         <>
-            <div className='border w-[100vw] flex justify-around items-center bg-white  -mt-12 shadow-md h-[3rem] fixed top-[6.5rem] z-10'>
+            <div className='border w-[100vw] flex justify-around items-center bg-white  -mt-12 shadow-md h-[2.4rem] fixed top-[6.5rem] z-10'>
                 <div className='flex flex-col'>
                     <div className='flex items-center gap-3 cursor-pointer ' onClick={handleShort}>
                         <p> <BiSortDown className='text-2xl' /></p>

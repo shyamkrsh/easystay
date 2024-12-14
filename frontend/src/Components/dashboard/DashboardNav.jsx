@@ -95,7 +95,7 @@ export default function DashboardNav({search, setSearch}) {
      const navigate = useNavigate();
 
     const onSubmit = data => {
-        axios.post('/api/login', data, {
+        axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/login`, data, {
             withCredentials: true,
         }).then((res) => {
             console.log(res.data)
@@ -107,14 +107,25 @@ export default function DashboardNav({search, setSearch}) {
     };
 
     const handleLogout = () => {
-        axios.get("/api/logout", {
-            withCredentials: true,
-        }).then((res) => {
-            console.log(res.data);
-            dispatch(setUserDetails(null));
-            window.location.href = "/"
+        axios.post(`${baseUrl}/api/logout`, {}, { withCredentials: true }).then((res) => {
+            if (res.data.success) {
+                toast.success("Logout successfully", {
+                    position: 'top-right'
+                })
+                dispatch(setUserDetails(null))
+                setTimeout(() => {
+                    window.location.href = "/"
+                }, 500);
+            } else {
+                toast.error(res.data.message, {
+                    position: 'top-right'
+                })
+            }
+
         }).catch((err) => {
-            console.log(err);
+            toast.error(err.message, {
+                position: 'top-right'
+            })
         })
     }
 
@@ -185,21 +196,14 @@ export default function DashboardNav({search, setSearch}) {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem onClick={() => navigate("/notifications")}>
-                <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="error">
-                        <MailIcon />
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
+           
             <MenuItem onClick={() => navigate("/notifications")}>
                 <IconButton
                     size="large"
                     aria-label="show 17 new notifications"
                     color="inherit"
                 >
-                    <Badge badgeContent={17} color="error">
+                    <Badge badgeContent={user?.notifications?.length} color="error">
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>
@@ -214,8 +218,8 @@ export default function DashboardNav({search, setSearch}) {
                     color="inherit"
                 >
                     {
-                        user && user.profileImage ? (<div>
-                            <img src={user.profileImage || user.picture} alt="" className='w-[40px] rounded-full border-slate-300 border-2' />
+                        user && user?.profileImage ? (<div>
+                            <img src={user?.profileImage || user?.picture} alt="" className='w-[40px] h-[40px] rounded-full border-slate-300 border-2' />
                         </div>)
                             :
                             (<AccountCircle className='text-3xl' style={{ fontSize: "35px" }} />)
@@ -231,7 +235,7 @@ export default function DashboardNav({search, setSearch}) {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar style={{ position: "fixed", marginTop: "0", zIndex: "1" }}>
+            <AppBar style={{ position: "fixed", marginTop: "0", zIndex: "1", backgroundColor: '#201f4d' }}>
 
                 <Toolbar>
                     <IconButton
@@ -287,17 +291,13 @@ export default function DashboardNav({search, setSearch}) {
 
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={4} color="error" onClick={() => navigate("/messages")}>
-                                <MailIcon />
-                            </Badge>
-                        </IconButton>
+                        
                         <IconButton
                             size="large"
                             aria-label="show 17 new notifications"
                             color="inherit"
                         >
-                            <Badge badgeContent={17} color="error" onClick={() => navigate("/notifications")}>
+                            <Badge badgeContent={user?.notifications?.length} color="error" onClick={() => navigate("/notifications")}>
                                 <NotificationsIcon />
                             </Badge>
                         </IconButton>
@@ -307,13 +307,13 @@ export default function DashboardNav({search, setSearch}) {
                             aria-label="account of current user"
                             aria-controls={menuId}
                             aria-haspopup="true"
-                            onClick={user && user._id ? handleProfileMenuOpen : handleLoggedProfile}
+                            onClick={user && user?._id ? handleProfileMenuOpen : handleLoggedProfile}
                             color="inherit"
                         >
 
                             {
-                                user && user.profileImage ? (<div>
-                                    <img src={user.profileImage || user.picture} alt="" className='w-[40px] rounded-full border-slate-300 border-2' />
+                                user && user?.profileImage ? (<div>
+                                    <img src={user?.profileImage || user?.picture} alt="" className='w-[40px] h-[40px] rounded-full border-slate-300 border-2' />
                                 </div>)
                                     :
                                     (<AccountCircle className='text-3xl' style={{ fontSize: "35px" }} />)
@@ -328,12 +328,12 @@ export default function DashboardNav({search, setSearch}) {
                             aria-label="show more"
                             aria-controls={mobileMenuId}
                             aria-haspopup="true"
-                            onClick={user && user._id ? handleMobileMenuOpen : handleLoggedProfile}
+                            onClick={user && user?._id ? handleMobileMenuOpen : handleLoggedProfile}
                             color="inherit"
                         >
                             {
-                                user && user.profileImage ? (<div>
-                                    <img src={user.profileImage || user.picture} alt="" className='w-[40px] rounded-full border-slate-300 border-2' />
+                                user && user?.profileImage ? (<div>
+                                    <img src={user?.profileImage || user?.picture} alt="" className='w-[40px] h-[40px] rounded-full border-slate-300 border-2' />
                                 </div>)
                                     :
                                     (<AccountCircle className='text-3xl' style={{ fontSize: "35px" }} />)

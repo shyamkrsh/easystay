@@ -3,7 +3,6 @@ const Listing = require("./Listing");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-
     profileImage: {
         type: String,
     },
@@ -23,9 +22,8 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    coordinates: {
-        latitude: Number,
-        longitude: Number,
+    location: {
+        type: String,
     },
     posts: [
         {
@@ -44,7 +42,14 @@ const userSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Report',
         }
+    ],
+    notifications: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Notification',
+        }
     ]
+ 
 })
 
 userSchema.post('findOneAndDelete', async (user) => {

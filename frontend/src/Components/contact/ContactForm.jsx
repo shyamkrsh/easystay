@@ -11,9 +11,9 @@ function ContactForm() {
 
 
     const navigate = useNavigate();
-    const { register, handleSubmit,reset, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, reset, watch, formState: { errors } } = useForm();
     const onSubmit = (data) => {
-        axios.post("/api/contact/new", data).then((res) => {
+        axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/contact/new`, data).then((res) => {
             toast.success("Thanks for Contacting with us", {
                 position: 'top-right'
             })
@@ -28,10 +28,10 @@ function ContactForm() {
 
         <>
 
-            <div className='w-full mt-10 md:mt-8 px-5 md:px-10 pb-10 md:w-[40%] shadow-lg'>
-                <h1 className='text-2xl font-semibold text-center'>Contact Form</h1>
+            <div className='w-full mt-10 md:mt-8 px-5 md:px-10 pb-10 md:w-[40%] bg-slate-900 rounded-md'>
+                <h1 className='text-2xl font-semibold text-center text-white pt-5'>Contact Form</h1>
                 <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-                    
+
                     <div className='mt-3'>
                         <TextField
                             id="name"
@@ -40,6 +40,12 @@ function ContactForm() {
                             autoComplete="current-name"
                             className='w-full'
                             {...register("name", { required: true })}
+                            InputLabelProps={{
+                                style: { color: 'white' } // Makes label text white
+                            }}
+                            inputProps={{
+                                style: { color: 'white', backgroundColor: '#3a5d5e', borderRadius: "10px" } // Makes input text white
+                            }}
                         />
                         {errors.name && <span className='text-red-600'>Please fill this field</span>}
                     </div>
@@ -51,6 +57,12 @@ function ContactForm() {
                             autoComplete="current-email"
                             className='w-full'
                             {...register("email", { required: true })}
+                            InputLabelProps={{
+                                style: { color: 'white' } // Makes label text white
+                            }}
+                            inputProps={{
+                                style: { color: 'white', backgroundColor: '#3a5d5e', borderRadius: "10px" } // Makes input text white
+                            }}
                         />
                         {errors.password && <span className='text-red-600'>Please fill this field</span>}
                     </div>
@@ -63,11 +75,19 @@ function ContactForm() {
                             className='w-full'
                             multiline
                             minRows={2}
+                            style={{ backgroundColor: '#3a5d5e', borderRadius: "10px" }}
                             {...register("description", { required: true })}
+                            InputLabelProps={{
+                                style: { color: 'white' } // Makes label text white
+                            }}
+                            inputProps={{
+                                style: { color: 'white', backgroundColor: '#3a5d5e', borderRadius: "10px" } // Makes input text white
+                            }}
+
                         />
                         {errors.password && <span className='text-red-600'>Please fill this field</span>}
                     </div>
-                    
+
 
                     <div className='flex flex-col mt-8'>
                         <Button variant="contained" type='submit'>
@@ -76,7 +96,7 @@ function ContactForm() {
 
                     </div>
 
-                   
+
 
                 </form>
 

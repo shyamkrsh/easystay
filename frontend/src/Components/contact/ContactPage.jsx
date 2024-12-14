@@ -1,16 +1,16 @@
 import React from 'react'
-import ContactNav from './ContactNav';
 import ContactIntro from './ContactIntro';
 import ContactForm from './ContactForm';
 import Footer from '../Footer'
 import ReachUs from './ReachUs';
 import Faq from '../about/Faq'
+import DemoNav from '../DemoNav'
 
 function ContactPage() {
     return (
         <>
-            <ContactNav />
-            <div className='mt-24 md:mt-32 px-[10%] md:flex md:justify-evenly md:items-center'>
+            <DemoNav heading={"Contact Us"}/>
+            <div className='pt-24  px-[10%] md:flex md:justify-evenly md:items-center'>
                 <ContactIntro />
                 <ContactForm />
             </div>

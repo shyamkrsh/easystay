@@ -10,7 +10,7 @@ import { FaHome } from "react-icons/fa";
 import { FaCartPlus } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { MdDashboard } from "react-icons/md";
-
+import {useSelector} from 'react-redux'
 
 
 const StyledFab = styled(Fab)({
@@ -23,6 +23,9 @@ const StyledFab = styled(Fab)({
 });
 
 export default function BottomAppBar() {
+
+  const user = useSelector((state) => state.user.user);
+
   return (
     <React.Fragment>
       
@@ -37,7 +40,7 @@ export default function BottomAppBar() {
           <Box sx={{ flexGrow: 1 }} />
          
           <IconButton color="inherit">
-            <Link to="/dashboard"><MdDashboard className='text-slate-800 text-4xl' /></Link>
+            <Link to={user && user._id ? "/dashboard" : "/"}><MdDashboard className='text-slate-800 text-4xl' /></Link>
           </IconButton>
         </Toolbar>
       </AppBar>

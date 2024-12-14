@@ -12,9 +12,9 @@ function Reports() {
 
     return (
         <>
-            <div className='w-full h-[4rem] bg-slate-200 flex items-center justify-between px-5 md:px-10'>
-                <h1 className='text-xl font-semibold'>𝙎𝙚𝙚 𝙘𝙡𝙞𝙚𝙣𝙩'𝙨 𝙧𝙚𝙥𝙤𝙧𝙩𝙨</h1>
-                <p className='text-sm'>{time}</p>
+            <div className='w-full h-[4rem] bg-slate-200 flex items-center justify-between px-5 md:px-10' style={{backgroundColor: '#201f4d'}}>
+                <h1 className='text-xl font-semibold text-white'>𝙎𝙚𝙚 𝙘𝙡𝙞𝙚𝙣𝙩'𝙨 𝙧𝙚𝙥𝙤𝙧𝙩𝙨</h1>
+                <p className='text-sm text-white'>{time}</p>
             </div>
             <div className='h-[100%] overflow-y-auto'>
                 <table className='w-full min-w-[700px]' border="1">

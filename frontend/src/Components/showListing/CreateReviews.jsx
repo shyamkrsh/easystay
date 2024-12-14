@@ -4,23 +4,35 @@ import { useForm } from "react-hook-form";
 import Rating from '@mui/material/Rating';
 import axios from 'axios'
 import { toast } from 'react-hot-toast';
+import { IoSend } from "react-icons/io5";
+import StarIcon from '@mui/icons-material/Star';
 
 
 function CreateReviews({ id }) {
   const [value, setValue] = React.useState(1);
 
-
+  let baseUrl = import.meta.env.VITE_API_BASE_URL;
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
   const onSubmit = (data) => {
-
-    axios.post(`/api/reviews/${id}/new`, {
+    axios.post(`${baseUrl}/api/reviews/${id}/new`, {
       content: data.content,
       rating: value,
+    },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      }
+    ).then((res) => {
+      if (res.data.success) {
+        toast.success("Your review added", {
+          position: 'top-right'
+        });
+      } else {
+        toast.error(res.data.message, {
+          position: 'top-right'
+        });
+      }
 
-    }).then((res) => {
-      toast.success("Your review added", {
-        position: 'top-right'
-      });
       reset()
       setValue(1);
     }).catch((err) => {
@@ -32,9 +44,9 @@ function CreateReviews({ id }) {
 
 
   return (
-    <div className='px-[10%] md:px-[15%] mb-32'>
-      <div>
-        <button className='btn bg-yellow-400 mb-12'>Add Review</button>
+    <div className='px-3 md:px-[15%] mb-32'>
+      <div className='bg-slate-900 p-5 w-[100%] md:w-[50%]'>
+        {/* <button className='btn bg-yellow-400 mb-12'>Add Review</button> */}
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextField
@@ -43,23 +55,34 @@ function CreateReviews({ id }) {
             multiline
             maxRows={4}
             autoComplete="current-name"
-            className='w-full md:w-[50%]'
+            className='w-full'
+            style={{backgroundColor: '#3a5d5e', borderRadius: "5px"}}
             {...register("content", { required: true })}
+            InputLabelProps={{
+              style: {color: "white"}
+            }}
+            inputProps={{
+              style: { color: 'white', borderRadius: "10px" } // Makes input text white
+          }}
           />
 
           <br /> <br />
-          <Rating
-            name="simple-controlled"
-            value={value}
-            onChange={(event, newValue) => {
-              event.preventDefault();
-              setValue(newValue);
-            }}
-          />
+          <div className='flex justify-between items-center'>
+            <Rating
+              name="simple-controlled"
+              value={value}
+              onChange={(event, newValue) => {
+                event.preventDefault();
+                setValue(newValue);
+              }}
+              emptyIcon={<StarIcon style={{ color: '#d3d3d3' }} fontSize="inherit" />}
+            />
 
-          <br /><br />
+              <button type='submit' className='w-16 h-16 rounded-full flex items-center justify-center bg-blue-500 text-white'> <IoSend className='text-3xl'/></button>
+         
+          </div>
 
-          <button className='bg-green-500 transition-all w-[100%] md:w-[50%] py-2 hover:bg-green-700' type='submit'>Add</button>
+
         </form>
       </div>
     </div>

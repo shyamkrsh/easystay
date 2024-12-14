@@ -1,6 +1,8 @@
 const Listing = require("../models/Listing");
 const Application = require("../models/Application");
 const User = require("../models/User");
+const {appliedEmail} = require("../middleware/appliedEmail");
+const Notification = require("../models/notifications");
 
 module.exports.newApplication = async (req, res) => {
     try {
@@ -14,9 +16,16 @@ module.exports.newApplication = async (req, res) => {
             location: req.body.location,
             author: req.userId,
         })
+        let notification = new Notification({
+            name: req.body.name,
+            content: `${req.body.name} is booking your service - ${listing.title} please see their details on your dashboard's clients section.`,
+        })
         await application.save();
+        await notification.save();
         user.clients.push(application._id);
+        user.notifications.push(notification._id);
         await user.save();
+        appliedEmail(req.body.email, req.body.name, listing.title, listing.price, listing.location);
         res.status(201).json({
             message: "New Application created",
             data: application,

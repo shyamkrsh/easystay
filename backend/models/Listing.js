@@ -16,11 +16,14 @@ const listingSchema = new Schema({
     },
     availability: {
         type: String,
-        required: true,
+        default: 'available'
     },
     price: {
         type: String || Number,
         required: true,
+    },
+    duration: {
+        type: String,
     },
     owner: {
         type: Schema.Types.ObjectId,

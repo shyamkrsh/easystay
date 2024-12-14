@@ -36,7 +36,10 @@ import { setUserDetails } from '../store/userSlice';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
-
+import { IoMicCircle } from "react-icons/io5";
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 
 
@@ -80,55 +83,62 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export default function SearchNavbar({ search, setSearch }) {
+export default function SearchNavbar({ search, setSearch , setShowListen}) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const [showPassword, setShowPassword] = useState(false);
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const navigate = useNavigate();
     const { fetchUserDetails } = useContext(Context);
 
     const user = useSelector((state) => state.user.user);
     const dispatch = useDispatch();
-
+    let baseUrl = import.meta.env.VITE_API_BASE_URL;
     const onSubmit = (data) => {
-        axios.post('/api/login', data, {
+        axios.post(`${baseUrl}/api/login`, data, {
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+            }
         }).then((res) => {
-            if (res.data.success) {
+            if (res?.data?.success) {
                 toast.success("Login successfully", {
                     position: 'top-right'
                 });
                 fetchUserDetails();
                 window.location.href = "/"
             } else {
-                toast.error(res.data.message, {
+                toast.error(res?.data?.message, {
                     position: 'top-right'
-                })
+                });
             }
 
         }).catch((err) => {
-            toast.error(err.message, {
+            toast.error(err?.message, {
                 position: 'top-right'
-            })
-            console.log(err);
+            });
         })
-    };
 
+    }
     const handleLogout = () => {
-        axios.get("/api/logout", {
-            withCredentials: true,
-        }).then((res) => {
+        axios.post(`${baseUrl}/api/logout`, {}, { withCredentials: true }).then((res) => {
             if (res.data.success) {
                 toast.success("Logout successfully", {
                     position: 'top-right'
                 })
-                dispatch(setUserDetails(null));
-                window.location.href = "/"
+                dispatch(setUserDetails(null))
+                setTimeout(() => {
+                    window.location.href = "/"
+                }, 500);
             } else {
                 toast.error(res.data.message, {
                     position: 'top-right'
@@ -141,7 +151,6 @@ export default function SearchNavbar({ search, setSearch }) {
             })
         })
     }
-
 
 
     const handleSearch = (event) => {
@@ -168,6 +177,23 @@ export default function SearchNavbar({ search, setSearch }) {
         document.getElementById('my_modal_3').showModal();
     }
 
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.onresult = (event) => {
+        let transcript = event.results[0][0].transcript;
+        setSearch(transcript);
+        recognition.stop();
+        setShowListen(false);
+    };
+
+    let handleMicSearch = () => {
+        setShowListen(true);
+        recognition.start();
+        setTimeout(() => {
+            setShowListen(false);
+        }, 15000);
+    }
+
 
 
     const menuId = 'primary-search-account-menu';
@@ -189,6 +215,7 @@ export default function SearchNavbar({ search, setSearch }) {
         >
             <MenuItem onClick={() => navigate("/profile")}>Profile</MenuItem>
             <MenuItem onClick={() => navigate("/dashboard")}>My Dashboard</MenuItem>
+            <MenuItem onClick={() => navigate("/listings/new")}>Post services</MenuItem>
             <MenuItem onClick={handleLogout} >Logout</MenuItem>
         </Menu>
     );
@@ -210,21 +237,14 @@ export default function SearchNavbar({ search, setSearch }) {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem onClick={() => navigate("/messages")}>
-                <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={1} color="error">
-                        <MailIcon />
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
+
             <MenuItem onClick={() => navigate("/notifications")}>
                 <IconButton
                     size="large"
                     aria-label="show 17 new notifications"
                     color="inherit"
                 >
-                    <Badge badgeContent={1} color="error">
+                    <Badge badgeContent={user?.notifications?.length} color="error">
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>
@@ -239,8 +259,8 @@ export default function SearchNavbar({ search, setSearch }) {
                     color="inherit"
                 >
                     {
-                        user && user.profileImage ? (<div>
-                            <img src={user.profileImage || user.picture} alt="" className='w-[40px] rounded-full border-slate-300 border-2' />
+                        user && user?.profileImage ? (<div>
+                            <img src={user?.profileImage || user?.picture} alt="" className='w-[40px] h-[40px] rounded-full border-slate-300 border-2' />
                         </div>)
                             :
                             (<AccountCircle className='text-3xl' style={{ fontSize: "35px" }} />)
@@ -256,7 +276,7 @@ export default function SearchNavbar({ search, setSearch }) {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar style={{ position: "fixed", marginTop: "0", zIndex: "1" }}>
+            <AppBar style={{ position: "fixed", marginTop: "0", zIndex: "10", backgroundColor: '#201f4d' }}>
 
                 <Toolbar>
                     <IconButton
@@ -273,27 +293,10 @@ export default function SearchNavbar({ search, setSearch }) {
                             <div className="drawer-content ">
 
                                 {/* Back Icon goes here */}
-                                <Link onClick={() => window.history.back()} ><IoArrowBack /></Link>
+                                <button onClick={() => window.history.back()} ><IoArrowBack /></button>
 
                             </div>
-                            <div className="drawer-side">
-                                <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
 
-                                <div className=" bg-white text-base-content min-h-full w-[70vw] md:w-80 p-4 z-50">
-                                    <h2 className='font-bold mt-8'>EasyStay</h2>
-                                    <ul className='mt-36 sidebar-list ps-5'>
-
-
-                                        <Link to="/"><li><FaHome id='sidebar-icon' /> Home</li></Link>
-                                        <Link to="/" ><li><FcAbout id='sidebar-icon' /> About</li></Link>
-                                        <Link to="/" ><li><IoIosContact id='sidebar-icon' /> Contact</li></Link>
-                                        <Link to="/" ><li><MdLogin id='sidebar-icon' /> Login</li></Link>
-                                        <Link onClick={handleLogout}><li><MdLogout id='sidebar-icon' /> Logout</li></Link>
-                                        <Link to="/" ><li><SiGnuprivacyguard id='sidebar-icon' /> Signup</li></Link>
-
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
 
                     </IconButton>
@@ -308,34 +311,37 @@ export default function SearchNavbar({ search, setSearch }) {
                     </Typography>
 
                     <Search>
-                        <form onSubmit={handleSearch} className='md:w-[400px]'>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Search area…"
-                                inputProps={{ 'aria-label': 'search' }}
-                                value={search}
-                                onChange={() => setSearch(event.target.value)}
-                            />
+                        <form onSubmit={handleSearch} className='md:w-[400px] flex items-center justify-between pe-3 '>
+                            <div className='w-[100%]'>
+                                <SearchIconWrapper>
+                                    <SearchIcon />
+                                </SearchIconWrapper>
+                                <StyledInputBase
+                                    placeholder="Search area…"
+                                    inputProps={{ 'aria-label': 'search' }}
+                                    value={search}
+                                    onChange={() => setSearch(event.target.value)}
+                                />
+                            </div>
+                            <IoMicCircle className='text-4xl cursor-pointer' onClick={handleMicSearch} />
                         </form>
                     </Search>
 
+
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={4} color="error">
-                                <MailIcon onClick={() => navigate("/messages")} />
-                            </Badge>
-                        </IconButton>
+
                         <IconButton
                             size="large"
                             aria-label="show 17 new notifications"
                             color="inherit"
                         >
-                            <Badge badgeContent={17} color="error">
-                                <NotificationsIcon onClick={() => navigate("/notifications")} />
-                            </Badge>
+                            {
+                                user && user._id ? <Badge badgeContent={user?.notifications?.length} color="error">
+                                    <NotificationsIcon onClick={() => navigate("/notifications")} />
+                                </Badge>
+                                    : ""
+                            }
                         </IconButton>
                         <IconButton
                             size="large"
@@ -343,13 +349,13 @@ export default function SearchNavbar({ search, setSearch }) {
                             aria-label="account of current user"
                             aria-controls={menuId}
                             aria-haspopup="true"
-                            onClick={user && user._id ? handleProfileMenuOpen : handleLoggedProfile}
+                            onClick={user && user?._id ? handleProfileMenuOpen : handleLoggedProfile}
                             color="inherit"
                         >
 
                             {
-                                user && user.profileImage ? (<div>
-                                    <img src={user.profileImage || user.picture} alt="" className='w-[40px] rounded-full border-slate-300 border-2' />
+                                user && user?.profileImage ? (<div>
+                                    <img src={user?.profileImage || user?.picture} alt="" className='w-[40px] h-[40px] rounded-full border-slate-300 border-2' />
                                 </div>)
                                     :
                                     (<AccountCircle className='text-3xl' style={{ fontSize: "35px" }} />)
@@ -364,12 +370,12 @@ export default function SearchNavbar({ search, setSearch }) {
                             aria-label="show more"
                             aria-controls={mobileMenuId}
                             aria-haspopup="true"
-                            onClick={user && user._id ? handleMobileMenuOpen : handleLoggedProfile}
+                            onClick={user && user?._id ? handleMobileMenuOpen : handleLoggedProfile}
                             color="inherit"
                         >
                             {
                                 user && user.profileImage ? (<div>
-                                    <img src={user.profileImage || user.picture} alt="" className='w-[40px] rounded-full border-slate-300 border-2' />
+                                    <img src={user?.profileImage || user?.picture} alt="" className='w-[40px] h-[40px] rounded-full border-slate-300 border-2' />
                                 </div>)
                                     :
                                     (<AccountCircle className='text-3xl' style={{ fontSize: "35px" }} />)
@@ -377,39 +383,100 @@ export default function SearchNavbar({ search, setSearch }) {
                         </IconButton>
                     </Box>
                 </Toolbar>
-
-
-
-
                 {/* <button className="btn" onClick={() => document.getElementById('my_modal_3').showModal()}>open modal</button> */}
-                <dialog id="my_modal_3" className="modal text-black ">
-                    <div className="modal-box p-5">
+                <dialog id="my_modal_3" className="modal-box p-5 bg-slate-700 text-white w-[100%]">
+                    <div className="bg-slate-700 text-white">
                         <form method="dialog">
                             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                         </form>
-                        <h3 className="font-bold text-lg">Login</h3>
+                        <h3 className="font-bold text-lg text-center">Login to your Account</h3>
                         <form action='/login' onSubmit={handleSubmit(onSubmit)} >
                             <div className='mt-5'>
-
                                 <TextField
                                     id=""
                                     label='Enter your email'
                                     type="text"
                                     autoComplete="current-email"
                                     className='w-full'
-                                    {...register("name", { required: true })}
+                                    {...register("email", { required: true })}
+                                    InputLabelProps={{
+                                        style: { color: 'white' }
+                                    }}
+
+                                    inputProps={{
+                                        style: { color: 'white', backgroundColor: '#628b8c', borderRadius: '3px' }
+                                    }}
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                            "& fieldset": {
+                                                borderColor: "white", 
+                                            },
+                                            "&:hover fieldset": {
+                                                borderColor: "white", 
+                                            },
+                                            "&.Mui-focused fieldset": {
+                                                borderColor: "white", 
+                                            },
+                                        },
+                                        "& .MuiInputLabel-root": {
+                                            color: "white", // Label color
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: "white", // Focused label color
+                                        },
+                                    }}
                                 />
                                 {errors.name && <span className='text-red-600'>Please fill this field</span>}
                             </div>
                             <div className='mt-3'>
-
                                 <TextField
                                     id=""
                                     label='Enter your password'
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     autoComplete="current-password"
                                     className='w-full'
                                     {...register("password", { required: true })}
+                                    InputLabelProps={{
+                                        style: { color: 'white'}
+                                    }}
+                                    inputProps={{
+                                        style: { color: 'white', backgroundColor: '#628b8c', borderRadius: '5px' }
+                                    }}
+    
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={togglePasswordVisibility}
+                                                    edge="end"
+                                                    style={{ color: 'white' }} 
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                            "& fieldset": {
+                                                borderColor: "white", 
+                                            },
+                                            "&:hover fieldset": {
+                                                borderColor: "white", 
+                                            },
+                                            "&.Mui-focused fieldset": {
+                                                borderColor: "white", 
+                                            },
+                                        },
+                                        "& .MuiInputLabel-root": {
+                                            color: "white", // Label color
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: "white", // Focused label color
+                                        },
+                                    }}
+    
                                 />
                                 {errors.password && <span className='text-red-600'>Please fill this field</span>}
                             </div>
@@ -419,8 +486,8 @@ export default function SearchNavbar({ search, setSearch }) {
                                     Login
                                 </Button>
                                 <div className='flex items-center justify-between md:mt-3 md:mb-3'>
-                                    <p className='text-center mt-5'><Link to={"/signup"} className='underline text-blue-600 text-xs md:text-xl'>Forgot password</Link></p>
-                                    <p className='text-center text-xs md:text-xl mt-5'>Create an account <Link to="/signup" className='underline text-blue-600'
+                                    <p className='text-center mt-5'><Link to={"/forgetPassword"} className='text-blue-600 text-[14px]'>Forgot password</Link></p>
+                                    <p className='text-center  mt-5'>Create an account <Link to="/signup" className='text-blue-600'
                                         onClick={() => document.getElementById('my_modal_3').hideModal()}
                                     >Signup</Link></p>
                                 </div>

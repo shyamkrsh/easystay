@@ -8,7 +8,7 @@ function YourClients() {
     const [clients, setClients] = useState([]);
 
     useState(() => {
-        axios.get(`/api/listings/${user._id}/clients`).then((res) => {
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/listings/${user._id}/clients`).then((res) => {
             setClients(res.data.data.clients);
         })
     }, [])
@@ -22,9 +22,9 @@ function YourClients() {
 
     return (
         <>
-            <div className='w-full h-[4rem] bg-slate-200 flex items-center justify-between px-5 md:px-10'>
-                <h1 className='text-xl font-semibold'>𝙎𝙚𝙚 𝙮𝙤𝙪𝙧 𝙘𝙡𝙞𝙚𝙣𝙩𝙨 𝙙𝙚𝙩𝙖𝙞𝙡𝙨</h1>
-                <p className='text-sm'>{time}</p>
+            <div className='w-full h-[4rem] bg-slate-200 flex items-center justify-between px-5 md:px-10' style={{backgroundColor: '#201f4d'}}>
+                <h1 className='text-xl font-semibold text-white'>𝙎𝙚𝙚 𝙮𝙤𝙪𝙧 𝙘𝙡𝙞𝙚𝙣𝙩𝙨 𝙙𝙚𝙩𝙖𝙞𝙡𝙨</h1>
+                <p className='text-sm text-white'>{time}</p>
             </div>
             <div className='h-[100%] overflow-y-auto'>
                 <table className='w-full min-w-[700px]' border="1">
@@ -38,13 +38,13 @@ function YourClients() {
                     </tr>
 
                     {
-                        clients ? clients.map((client, index) => (
+                        clients ? clients?.map((client, index) => (
                             <tr key={index} className={index % 2 == 0 ? 'bg-slate-300 h-[2rem]  hover:opacity-80 cursor-pointer': "bg-slate-400 hover:opacity-80 cursor-pointer h-[2rem]"}>
                                 <td className='text-center'>{index+1}</td>
-                                <td className='text-center'>{client.name}</td>
-                                <td className='w-[20%] text-center'>{client.email}</td>
-                                <td className='text-center'>+91 {client.mobNumber}</td>
-                                <td className='text-center'>{client.location}</td>
+                                <td className='text-center'>{client?.name}</td>
+                                <td className='w-[20%] text-center'>{client?.email}</td>
+                                <td className='text-center'>+91 {client?.mobNumber}</td>
+                                <td className='text-center'>{client?.location}</td>
                                 <td className='text-center text-red-800'>Pending</td>
                             </tr>
                             

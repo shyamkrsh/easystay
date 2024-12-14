@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import ShowListingNav from './ShowListingNav'
-import Images from './images'
+import ShowSlides from './ShowSlides'
 import ListingsDetails from './ListingsDetails'
 import ApplyForm from './ApplyForm'
 import Footer from '../Footer'
@@ -14,9 +13,16 @@ import Fab from '@mui/material/Fab';
 import EditIcon from '@mui/icons-material/Edit';
 import { useSelector } from 'react-redux'
 import { toast } from 'react-hot-toast'
+import { Link } from 'react-router-dom'
+import DemoNav from '../DemoNav.jsx'
+import DeleteListing from './DeleteListing.jsx'
+
 
 
 function ShowListingPage() {
+
+  let baseUrl = import.meta.env.VITE_API_BASE_URL;
+
   const { id } = useParams();
   const [listingData, setListingData] = useState(null);
   const [owner, setOwner] = useState(null);
@@ -25,7 +31,7 @@ function ShowListingPage() {
 
   useEffect(() => {
     try {
-      axios.get(`/api/listings/${id}/show`).then((res) => {
+      axios.get(`${baseUrl}/api/listings/${id}/show`).then((res) => {
         setOwner(res.data.owner);
         setListingData(res.data.data);
       }).catch((err) => {
@@ -42,38 +48,40 @@ function ShowListingPage() {
     console.log("Editing Listing")
   }
 
-  const handleDeleteListing = () => {
-    axios.delete(`/api/listings/${id}/delete`).then((res) =>{
-      toast.success("Your post has been deleted");
-      navigate("/dashboard");
-    }).catch((err) => {
-      toast.error(err.message);
-    })
-  }
+  const [showDelete, setShowDelete] = useState(false);
+
+  
 
 
   return (
     <>
-      <ShowListingNav />
-      <div className='mt-20 '>
-        <Images 
-        img1={listingData ? listingData.images[0].url : ""} img2={listingData ? listingData.images[1].url : ""}
-        img3={listingData ? listingData.images[2].url : ""} img4={listingData ? listingData.images[3].url : ""}
+      <DemoNav heading={"Details"} />
+      <div className='pt-20 '>
+        <ShowSlides
+          img1={listingData ? listingData?.images[0].url : ""} img2={listingData ? listingData?.images[1].url : ""}
+          img3={listingData ? listingData?.images[2].url : ""} img4={listingData ? listingData?.images[3].url : ""}
         />
       </div>
 
       <div className={owner?._id == user?._id ? "flex items-center justify-center gap-10 md:gap-32 md:mt-5 p-3 mt-3" : "hidden"}>
-        <Fab color="secondary" aria-label="edit" onClick={handleEditListing} className='z-0' style={{zIndex: "0"}}>
-          <EditIcon className="text-xl " />
+        <Fab color="secondary" aria-label="edit" onClick={handleEditListing} className='z-0' style={{ zIndex: "0" }}>
+          <Link to={`/edit/${id}`}><EditIcon className="text-xl " /></Link>
         </Fab>
-        <Button variant="outlined" startIcon={<DeleteIcon />} className="h-[2.5rem]" onClick={handleDeleteListing}>
-          Delete
-        </Button>
+
+        {
+          showDelete ? <DeleteListing id={id} /> 
+          : <Button variant="outlined" startIcon={<DeleteIcon />} className="h-[2.5rem]" onClick={setShowDelete(true)}>
+            Delete
+          </Button>
+
+
+        }
+
       </div>
 
-      <div className='flex flex-col md:flex-row justify-between items-center px-[10%] md:px-[15%] mt-8 mb-16 gap-5'>
-        <ListingsDetails owner={owner} data={listingData ? listingData : ""} />
-        <ApplyForm id={id} />
+      <div className='flex flex-col md:flex-row items-center justify-between px-[10%] md:px-[15%] mt-8 mb-16 gap-24'>
+        <ListingsDetails owner={owner} data={listingData ? listingData : ""} id={id} />
+        <ApplyForm id={id} amount={listingData?.price} />
       </div>
       <CreateReviews id={id} />
       <div className='px-[10%] md:px-[15%]'>
