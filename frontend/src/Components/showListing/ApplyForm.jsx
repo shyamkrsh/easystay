@@ -43,7 +43,7 @@ function ApplyForm({ id , amount}) {
     }
 
     return (
-        <div className='w-[95vw] md:w-[50%] bg-slate-900 rounded-md p-5 md:p-10 shadow-md'>
+        <div className='bg-slate-900 rounded-md shadow-md w-[100%] p-5'>
 
             <form onSubmit={handleSubmit(onSubmit)} >
                 <h2 className='text-center text-2xl font-bold text-white'>Book Your Choice</h2>

@@ -50,7 +50,7 @@ function ShowListingPage() {
 
   const [showDelete, setShowDelete] = useState(false);
 
-  
+
 
 
   return (
@@ -69,19 +69,23 @@ function ShowListingPage() {
         </Fab>
 
         {
-          showDelete ? <DeleteListing id={id} /> 
-          : <Button variant="outlined" startIcon={<DeleteIcon />} className="h-[2.5rem]" onClick={setShowDelete(true)}>
-            Delete
-          </Button>
+          showDelete ? <DeleteListing id={id} />
+            : <Button variant="outlined" startIcon={<DeleteIcon />} className="h-[2.5rem]" onClick={setShowDelete(true)}>
+              Delete
+            </Button>
 
 
         }
 
       </div>
 
-      <div className='flex flex-col md:flex-row items-center justify-between px-[10%] md:px-[15%] mt-8 mb-16 gap-24'>
-        <ListingsDetails owner={owner} data={listingData ? listingData : ""} id={id} />
-        <ApplyForm id={id} amount={listingData?.price} />
+      <div className=' w-[100vw] px-[10%] md:px-[15%] mt-8 flex flex-col md:flex-row items-center justify-between  mb-16 gap-24'>
+        <div className='w-[100%] md:w-[50%] '>
+          <ListingsDetails owner={owner} data={listingData ? listingData : ""} id={id} />
+        </div>
+        <div className='w-[95vw] md:w-[50%]'>
+          <ApplyForm id={id} amount={listingData?.price} />
+        </div>
       </div>
       <CreateReviews id={id} />
       <div className='px-[10%] md:px-[15%]'>
