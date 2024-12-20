@@ -174,7 +174,8 @@ export default function DashboardNav({search, setSearch}) {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+            <MenuItem onClick={() => navigate("/profile")}>Profile</MenuItem>
+            <MenuItem onClick={() => navigate("/listings/new")}>Post services</MenuItem>
             <MenuItem onClick={handleLogout} >Logout</MenuItem>
         </Menu>
     );
