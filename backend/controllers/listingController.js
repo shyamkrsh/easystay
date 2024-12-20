@@ -181,21 +181,25 @@ module.exports.editListing = async (req, res) => {
         )
         if(req?.files[0]){
             await cloudinary.uploader.destroy(listing.images[0].filename);
+            updatedListing.images[0].url = req?.files[0]?.path;
+            updatedListing.images[0].filename = req?.files[0]?.filename;
         }
         if(req?.files[1]){
             await cloudinary.uploader.destroy(listing.images[1].filename);
+            updatedListing.images[1].url = req?.files[1]?.path;
+            updatedListing.images[1].filename = req?.files[1]?.filename;
         }
         if(req?.files[2]){
             await cloudinary.uploader.destroy(listing.images[2].filename);
+            updatedListing.images[2].url = req?.files[2]?.path;
+            updatedListing.images[2].filename = req?.files[2]?.filename;
         }
         if(req?.files[3]){
             await cloudinary.uploader.destroy(listing.images[3].filename);
+            updatedListing.images[3].url = req?.files[3]?.path;
+            updatedListing.images[3].filename = req?.files[3]?.filename;
         }
-        updatedListing.images.push({ url: req?.files[0]?.path, filename: req?.files[0]?.filename })
-        updatedListing.images.push({ url: req?.files[1]?.path, filename: req?.files[1]?.filename })
-        updatedListing.images.push({ url: req?.files[2]?.path, filename: req?.files[2]?.filename })
-        updatedListing.images.push({ url: req?.files[3]?.path, filename: req?.files[3]?.filename })
-
+        
         await updatedListing.save();
         res.status(200).json({
             message: "Listing Updated successfully",
