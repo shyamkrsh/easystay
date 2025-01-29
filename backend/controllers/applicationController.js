@@ -39,7 +39,7 @@ module.exports.newApplication = async (req, res) => {
 module.exports.verifyPayment = async (req, res) => {
     try {
         const { id } = req.params;
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, data } = req.body;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, inputData } = req.body;
         let listing = await Listing.findById(id);
         let user = await User.findById(listing.owner);
         const sign = razorpay_order_id + "|" + razorpay_payment_id;
@@ -50,10 +50,10 @@ module.exports.verifyPayment = async (req, res) => {
         const isAuthentic = expectedSign === razorpay_signature;
         if (isAuthentic) {
             let application = new Application({
-                name: data.name,
-                email: data.email,
-                mobNumber: data.mobNumber,
-                location: data.location,
+                name: inputData.name,
+                email: inputData.email,
+                mobNumber: inputData.mobNumber,
+                location: inputData.location,
                 author: req.userId,
                 payment: true,
             })
