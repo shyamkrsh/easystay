@@ -5,10 +5,7 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const data = require("./data.json");
-const Listing = require("./models/Listing");
 const contactRouter = require("./routes/contactRouter");
-const Razorpay = require("razorpay");
 
 
 main().then((res) => {
@@ -34,8 +31,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
 
-
-
 const userRouter = require("./routes/userRouter");
 const listingRouter = require("./routes/listingRouter");
 const reviewsRouter = require("./routes/reviewsRouter");
@@ -47,63 +42,6 @@ app.use("/api/reviews", reviewsRouter);
 app.use("/api/application", applicationRouter);
 app.use("/api/contact", contactRouter);
 
-
-// payment
-
-
-const razorpay = new Razorpay({
-    key_id: process.env.RAJORPAY_KEY_ID,
-    key_secret: process.env.RAJORPAY_SECRET,
-});
-
-app.post("/create-owner", async (req, res) => {
-    const { name, email, contact } = req.body;
-  
-    try {
-      const contactResponse = await razorpay.contacts.create({
-        name,
-        email,
-        contact,
-        type: "customer",
-      });
-  
-      const fundAccountResponse = await razorpay.fund_accounts.create({
-        contact_id: contactResponse.id,
-        account_type: "bank_account",
-        bank_account: {
-          name,
-          ifsc: "HDFC0001234", 
-          account_number: "1234567890", 
-        },
-      });
-  
-      res.status(201).json({
-        success: true,
-        contact: contactResponse,
-        fundAccount: fundAccountResponse,
-      });
-    } catch (error) {
-      res.status(500).json({ success: false, error: error.message });
-    }
-  });
-  
-
-app.post("/create-order", async (req, res) => {
-    try {
-        const { amount, currency } = req.body; // Amount in smallest unit (e.g., 100 for ₹1.00)
-        const options = {
-            amount: amount * 100, // Convert to paise
-            currency: currency || "INR",
-            receipt: `receipt_${Date.now()}`,
-        };
-
-        const order = await razorpay.orders.create(options);
-        res.status(200).json({ success: true, order });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
 
 
 module.exports = app;
