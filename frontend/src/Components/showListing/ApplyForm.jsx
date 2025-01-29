@@ -19,7 +19,6 @@ function ApplyForm({ id, amount }) {
         if (!user) {
             navigate("/login");
         }
-
         let response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/application/${id}/order`, {
             method: 'POST',
             headers: {
@@ -33,28 +32,51 @@ function ApplyForm({ id, amount }) {
         let data = await response.json();
         console.log(data);
 
+        handlePaymentVerify(data?.data);
 
         const handlePaymentVerify = async (data) => {
-            axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/application/${id}/payment/${amount}`, data, {
-                withCredentials: true,
-            }).then((res) => {
-                setSearch(false);
-                if (res.data.success) {
-                    toast.success("Application accepted", {
-                        position: 'top-right'
-                    })
-                } else {
-                    toast.error(res.data.message, {
-                        position: 'top-right'
-                    });
+            try {
+                const options = {
+                    key: process.env.RAZORPAY_KEY_ID,
+                    amount: data.amount,
+                    currency: "INR",
+                    name: "Real Estate",
+                    description: "Payment",
+                    order_id: data.id,
+                    handler: async (response) => {
+                        try {
+                            const verifyResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/application/${id}/verifyPayment`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    data: data,
+                                })
+                            })
+                            const verifyData = await verifyResponse.json();
+                            console.log(verifyData);
+                            
+                        } catch (err) {
+                            console.log(err)
+                        }
+                    },
+                    theme: {
+                        color: '#686CFD'
+                    }
                 }
-                reset()
-            }).catch((err) => {
-                setSearch(false);
-                toast.error(err.message, {
-                    position: 'top-right'
-                });
-            })
+
+                const rzp1 = new window.Razorpay(options);
+                rzp1.open();
+
+            } catch (err) {
+                console.log(err)
+            }
+
         }
     }
 

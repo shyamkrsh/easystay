@@ -15,7 +15,7 @@ const razorpayInstance = new Razorpay({
 });
 
 module.exports.newApplication = async (req, res) => {
-    const {amount} = req.body;
+    const { amount } = req.body;
     try {
         const options = {
             amount: Number(amount * 100),
@@ -38,57 +38,43 @@ module.exports.newApplication = async (req, res) => {
 
 module.exports.verifyPayment = async (req, res) => {
     try {
-        const { id, amount } = req.params;
+        const { id } = req.params;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, data } = req.body;
         let listing = await Listing.findById(id);
         let user = await User.findById(listing.owner);
-        const options = {
-            amount: amount * 100,
-            currency: "INR",
-            receipt: crypto.randomBytes(10).toString("hex"),
-        }
-        razorpayInstance.orders.create(options, (err, order) => {
-            if (err) {
-                return res.json({
-                    message: err.message || err,
-                    data: [],
-                    error: true,
-                    success: false,
-                })
-            }
-            return res.json({
-                message: "New Order created",
-                data: order,
+        const sign = razorpay_order_id + "|" + razorpay_payment_id;
+        const expectedSign = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .update(sign.toString())
+            .digest('hex');
+
+        const isAuthentic = expectedSign === razorpay_signature;
+        if (isAuthentic) {
+            let application = new Application({
+                name: data.name,
+                email: data.email,
+                mobNumber: data.mobNumber,
+                location: data.location,
+                author: req.userId,
+                payment: true,
+            })
+            let notification = new Notification({
+                name: req.body.name,
+                content: `${req.body.name} is booking your service - ${listing.title} please see their details on your dashboard's clients section.`,
+            })
+            await application.save();
+            await notification.save();
+            user.clients.push(application._id);
+            user.notifications.push(notification._id);
+            await user.save();
+            appliedEmail(req.body.email, req.body.name, listing.title, listing.price, listing.location);
+            res.status(201).json({
+                message: "New Application created",
+                data: application,
                 error: false,
                 success: true,
             })
-        })
-
-
-
-        let application = new Application({
-            name: req.body.name,
-            email: req.body.email,
-            mobNumber: req.body.mobNumber,
-            location: req.body.location,
-            author: req.userId,
-            payment: false,
-        })
-        let notification = new Notification({
-            name: req.body.name,
-            content: `${req.body.name} is booking your service - ${listing.title} please see their details on your dashboard's clients section.`,
-        })
-        await application.save();
-        await notification.save();
-        user.clients.push(application._id);
-        user.notifications.push(notification._id);
-        await user.save();
-        appliedEmail(req.body.email, req.body.name, listing.title, listing.price, listing.location);
-        res.status(201).json({
-            message: "New Application created",
-            data: application,
-            error: false,
-            success: true,
-        })
+        }
+        
     } catch (err) {
         res.json({
             message: err.message || err,
