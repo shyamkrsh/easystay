@@ -84,7 +84,7 @@ function ShowListingPage() {
           <ListingsDetails owner={owner} data={listingData ? listingData : ""} id={id} />
         </div>
         <div className='w-[95vw] md:w-[50%]'>
-          <ApplyForm id={id} amount={listingData?.price} />
+          <ApplyForm id={id} amount={listingData?.price} title={listingData?.title}/>
         </div>
       </div>
       <CreateReviews id={id} />

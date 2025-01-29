@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 
-function ApplyForm({ id, amount }) {
+function ApplyForm({ id, amount , title}) {
     const [search, setSearch] = useState(false)
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
     const user = useSelector((state) => state.user.user);
@@ -40,7 +40,7 @@ function ApplyForm({ id, amount }) {
                     key: import.meta.env.RAZORPAY_KEY_ID,
                     amount: data.amount,
                     currency: "INR",
-                    name: "Real Estate",
+                    name: title,
                     description: "Payment",
                     order_id: data.id,
                     handler: async (response) => {
@@ -59,8 +59,13 @@ function ApplyForm({ id, amount }) {
                                 })
                             })
                             const verifyData = await verifyResponse.json();
-                            console.log(verifyData);
-
+                            if(verifyData.success){
+                                toast.success("Payment Successful", {
+                                    position: "top-right",
+                                })
+                            }else{
+                                toast.error("Payment Failed")
+                            }   
                         } catch (err) {
                             console.log(err)
                         }
