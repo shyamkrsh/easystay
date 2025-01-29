@@ -15,7 +15,7 @@ function ApplyForm({ id, amount }) {
     const user = useSelector((state) => state.user.user);
     const navigate = useNavigate();
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (inputData) => {
         if (!user) {
             navigate("/login");
         }
@@ -55,7 +55,7 @@ function ApplyForm({ id, amount }) {
                                     razorpay_order_id: response.razorpay_order_id,
                                     razorpay_payment_id: response.razorpay_payment_id,
                                     razorpay_signature: response.razorpay_signature,
-                                    data: data,
+                                    data: inputData,
                                 })
                             })
                             const verifyData = await verifyResponse.json();
