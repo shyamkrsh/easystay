@@ -10,6 +10,7 @@ function YourClients() {
     useState(() => {
         axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/listings/${user._id}/clients`).then((res) => {
             setClients(res.data.data.clients);
+            console.log(res.data.data.clients);
         })
     }, [])
 
@@ -45,7 +46,7 @@ function YourClients() {
                                 <td className='w-[20%] text-center'>{client?.email}</td>
                                 <td className='text-center'>+91 {client?.mobNumber}</td>
                                 <td className='text-center'>{client?.location}</td>
-                                <td className='text-center text-red-800'>Pending</td>
+                                <td className='text-center text-green-800'>{client?.payment == true ? "Done" : "No"}</td>
                             </tr>
                             
                         ))
