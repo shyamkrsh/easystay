@@ -50,23 +50,23 @@ module.exports.verifyPayment = async (req, res) => {
         const isAuthentic = expectedSign === razorpay_signature;
         if (isAuthentic) {
             let application = new Application({
-                name: inputData.name,
-                email: inputData.email,
-                mobNumber: inputData.mobNumber,
-                location: inputData.location,
-                author: req.userId,
+                name: inputData?.name,
+                email: inputData?.email,
+                mobNumber: inputData?.mobNumber,
+                location: inputData?.location,
+                author: req?.userId,
                 payment: true,
             })
             let notification = new Notification({
-                name: req.body.name,
-                content: `${req.body.name} is booking your service - ${listing.title} please see their details on your dashboard's clients section.`,
+                name: inputData?.name,
+                content: `${inputData?.name} is booking your service - ${listing?.title} please see their details on your dashboard's clients section.`,
             })
             await application.save();
             await notification.save();
             user.clients.push(application._id);
             user.notifications.push(notification._id);
             await user.save();
-            appliedEmail(req.body.email, req.body.name, listing.title, listing.price, listing.location);
+            appliedEmail(inputData?.email, inputData?.name, listing.title, listing.price, listing.location);
             res.status(201).json({
                 message: "New Application created",
                 data: application,

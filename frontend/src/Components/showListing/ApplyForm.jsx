@@ -34,10 +34,10 @@ function ApplyForm({ id, amount }) {
 
         handlePaymentVerify(data?.data);
 
-        const handlePaymentVerify = async (data) => {
+        async function handlePaymentVerify(data){
             try {
                 const options = {
-                    key: process.env.RAZORPAY_KEY_ID,
+                    key: import.meta.env.RAZORPAY_KEY_ID,
                     amount: data.amount,
                     currency: "INR",
                     name: "Real Estate",
@@ -55,12 +55,12 @@ function ApplyForm({ id, amount }) {
                                     razorpay_order_id: response.razorpay_order_id,
                                     razorpay_payment_id: response.razorpay_payment_id,
                                     razorpay_signature: response.razorpay_signature,
-                                    inputData : inputData,
+                                    inputData: inputData,
                                 })
                             })
                             const verifyData = await verifyResponse.json();
                             console.log(verifyData);
-                            
+
                         } catch (err) {
                             console.log(err)
                         }
