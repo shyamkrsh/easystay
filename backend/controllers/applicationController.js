@@ -1,20 +1,77 @@
 const Listing = require("../models/Listing");
 const Application = require("../models/Application");
 const User = require("../models/User");
-const {appliedEmail} = require("../middleware/appliedEmail");
+const { appliedEmail } = require("../middleware/appliedEmail");
 const Notification = require("../models/notifications");
+const Razorpay = require("razorpay");
+const dotenv = require("dotenv");
+dotenv.config();
+const crypto = require("crypto");
+
+
+const razorpayInstance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 module.exports.newApplication = async (req, res) => {
+    const {amount} = req.body;
     try {
-        const { id } = req.params;
+        const options = {
+            amount: Number(amount * 100),
+            currency: "INR",
+            receipt: crypto.randomBytes(10).toString('hex'),
+        }
+        razorpayInstance.orders.create(options, (error, orders) => {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ message: "Something Went Wrong!" })
+            }
+            console.log(orders);
+            res.status(200).json({ data: orders });
+        })
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error!" });
+        console.log(error);
+    }
+}
+
+module.exports.verifyPayment = async (req, res) => {
+    try {
+        const { id, amount } = req.params;
         let listing = await Listing.findById(id);
         let user = await User.findById(listing.owner);
+        const options = {
+            amount: amount * 100,
+            currency: "INR",
+            receipt: crypto.randomBytes(10).toString("hex"),
+        }
+        razorpayInstance.orders.create(options, (err, order) => {
+            if (err) {
+                return res.json({
+                    message: err.message || err,
+                    data: [],
+                    error: true,
+                    success: false,
+                })
+            }
+            return res.json({
+                message: "New Order created",
+                data: order,
+                error: false,
+                success: true,
+            })
+        })
+
+
+
         let application = new Application({
             name: req.body.name,
             email: req.body.email,
             mobNumber: req.body.mobNumber,
             location: req.body.location,
             author: req.userId,
+            payment: false,
         })
         let notification = new Notification({
             name: req.body.name,
@@ -32,7 +89,7 @@ module.exports.newApplication = async (req, res) => {
             error: false,
             success: true,
         })
-    }catch(err){
+    } catch (err) {
         res.json({
             message: err.message || err,
             data: [],

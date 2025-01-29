@@ -21,6 +21,10 @@ const applicationSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
     },
+    payment: {
+        type: Boolean,
+        default: false,
+    },
     createdAt: {
         type: Date,
         default: Date.now(),

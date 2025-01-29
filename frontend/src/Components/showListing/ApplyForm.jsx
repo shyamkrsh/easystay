@@ -9,37 +9,55 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 
-function ApplyForm({ id , amount}) {
+function ApplyForm({ id, amount }) {
     const [search, setSearch] = useState(false)
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
     const user = useSelector((state) => state.user.user);
     const navigate = useNavigate();
-    const onSubmit = (data) => {
-        if(!user){
+
+    const onSubmit = async (data) => {
+        if (!user) {
             navigate("/login");
         }
-        setSearch(true)
-        axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/application/${id}/payment`, data, {
-            withCredentials: true,
-        }).then((res) => {
-            setSearch(false);
-            if(res.data.success){
-                toast.success("Application accepted", {
-                    position: 'top-right'
-                })
-            }else{
-                toast.error(res.data.message, {
+
+        let response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/application/${id}/order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                amount: amount,
+            })
+        })
+        let data = await response.json();
+        console.log(data);
+
+
+        const handlePaymentVerify = async (data) => {
+            axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/application/${id}/payment/${amount}`, data, {
+                withCredentials: true,
+            }).then((res) => {
+                setSearch(false);
+                if (res.data.success) {
+                    toast.success("Application accepted", {
+                        position: 'top-right'
+                    })
+                } else {
+                    toast.error(res.data.message, {
+                        position: 'top-right'
+                    });
+                }
+                reset()
+            }).catch((err) => {
+                setSearch(false);
+                toast.error(err.message, {
                     position: 'top-right'
                 });
-            }
-            reset()
-        }).catch((err) => {
-            setSearch(false);
-            toast.error(err.message, {
-                position: 'top-right'
-            });
-        })
+            })
+        }
     }
+
 
     return (
         <div className='bg-slate-900 rounded-md shadow-md w-[100%] p-5'>
@@ -114,14 +132,14 @@ function ApplyForm({ id , amount}) {
                     {errors.password && <span className='text-red-600'>Please fill this field</span>}
                 </div>
                 <div className='mt-5 text-right'>
-                   
+
                 </div>
                 <div className='flex flex-col mt-5'>
-                    <Button variant="contained" type='submit'>
+                    <button className='bg-yellow-600 text-white p-2 rounded-md font-semibold' type='submit'>
                         {
-                            search ? <p className='flex items-center gap-3'>Applying <span className="loading loading-spinner loading-md"></span></p> : <p>Apply</p>
+                            search ? <p className='flex items-center gap-3'>Applying <span className="loading loading-spinner loading-md"></span></p> : <p><span className='text-slate-300'>₹ {amount}</span> Pay & Apply</p>
                         }
-                    </Button>
+                    </button>
                 </div>
 
             </form>

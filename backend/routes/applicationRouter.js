@@ -3,7 +3,7 @@ const router = express.Router();
 const applicationController = require("../controllers/applicationController");
 const authToken = require("../middleware/authToken");
 
-router.post("/:id/payment", authToken, applicationController.newApplication);
+router.post("/:id/order", authToken, applicationController.newApplication);
 
 
 
