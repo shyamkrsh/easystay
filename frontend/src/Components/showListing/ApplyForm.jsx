@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 
+
 function ApplyForm({ id, amount , title}) {
     const [search, setSearch] = useState(false)
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
@@ -16,6 +17,8 @@ function ApplyForm({ id, amount , title}) {
     const navigate = useNavigate();
 
     const onSubmit = async (inputData) => {
+        console.log("Key_id  - ", import.meta.env.VITE_RAZORPAY_KEY_ID);
+        console.log("Key_secret - ", import.meta.env.VITE_RAZORPAY_KEY_SECRET);
         if (!user) {
             navigate("/login");
         }
@@ -37,7 +40,7 @@ function ApplyForm({ id, amount , title}) {
         async function handlePaymentVerify(data){
             try {
                 const options = {
-                    key: import.meta.env.RAZORPAY_KEY_ID,
+                    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                     amount: data.amount,
                     currency: "INR",
                     name: title,
